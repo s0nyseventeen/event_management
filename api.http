@@ -1,0 +1,52 @@
+### Login
+POST http://localhost:8000/api/login/
+Content-Type: application/json
+
+{
+    "username": "sony",
+    "password": "qwerty"
+}
+
+
+### Create Event
+POST http://localhost:8000/api/events/
+Content-Type: application/json
+Authorization: Token 6746448bd61512e48695356d92e852da2e385521
+
+{
+    "title": "Test Event 2",
+    "description": "This is a test event 2",
+    "date": "2022-12-01",
+    "location": "Lutsk",
+    "organizer": 8
+}
+
+
+### Get Events
+GET http://localhost:8000/api/events/
+Authorization: Token 6746448bd61512e48695356d92e852da2e385521
+
+
+### Update Event
+PUT http://localhost:8000/api/events/3/
+Content-Type: application/json
+Authorization: Token 6746448bd61512e48695356d92e852da2e385521
+
+{
+    "title": "Updated Test Event",
+    "description": "This is an updated test event.",
+    "date": "2023-01-01",
+    "location": "Updated Test Location",
+    "organizer": 8
+}
+
+
+### Delete Event
+DELETE http://localhost:8000/api/events/3/
+Authorization: Token 6746448bd61512e48695356d92e852da2e385521
+
+
+
+### Register for Event
+POST http://localhost:8000/api/events/5/register/
+Authorization: Token 6746448bd61512e48695356d92e852da2e385521
