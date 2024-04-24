@@ -28,13 +28,13 @@ Authorization: Token 6746448bd61512e48695356d92e852da2e385521
 
 
 ### Update Event
-PUT http://localhost:8000/api/events/3/
+PUT http://localhost:8000/api/events/4/
 Content-Type: application/json
 Authorization: Token 6746448bd61512e48695356d92e852da2e385521
 
 {
-    "title": "Updated Test Event",
-    "description": "This is an updated test event.",
+    "title": "Updated 1",
+    "description": "This is an updated test event 1",
     "date": "2023-01-01",
     "location": "Updated Test Location",
     "organizer": 8
@@ -46,7 +46,11 @@ DELETE http://localhost:8000/api/events/3/
 Authorization: Token 6746448bd61512e48695356d92e852da2e385521
 
 
-
 ### Register for Event
 POST http://localhost:8000/api/events/5/register/
+Authorization: Token 6746448bd61512e48695356d92e852da2e385521
+
+
+### Search Events
+GET http://localhost:8000/api/events/search/?query=Updated 1
 Authorization: Token 6746448bd61512e48695356d92e852da2e385521

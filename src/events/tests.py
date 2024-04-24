@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -11,6 +13,7 @@ from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
 from rest_framework.authtoken.models import Token
 
+from events.helpers import send_event_registration_email
 from events.models import Event
 from events.models import EventRegistration
 from events.serializers import EventSerializer
@@ -216,3 +219,38 @@ class EventRegistrationViewTest(CreateEvent, CreateToken):
             reverse('register-event', kwargs={'event_id': self.event.id})
         )
         self.assertEqual(resp.status_code, HTTP_401_UNAUTHORIZED)
+
+
+class EventSearchTests(CreateEvent, CreateToken):
+    def setUp(self):
+        super().setUp()
+        self.event2 = Event.objects.create(
+            title='Test Event 2',
+            description='This is test event 2',
+            date='2024-01-09',
+            location='Rio',
+            organizer=self.user
+        )
+
+    def test_search_events_success(self):
+        resp = self.client.get(
+            reverse('search-event'), {'query': 'My event'}
+        )
+        self.assertEqual(resp.status_code, HTTP_200_OK)
+        self.assertEqual(len(resp.data), 1)
+        self.assertEqual(resp.data[0]['title'], 'My event')
+
+
+class EventRegistrationEmailTest(CreateEvent):
+    def setUp(self):
+        super().setUp()
+
+    @patch('events.helpers.send_mail')
+    def test_send_event_registration_email_success(self, mock_email):
+        send_event_registration_email(self.user, self.event)
+        mock_email.assert_called_once_with(
+            'Event registration',
+            "Hi Johny,\n\nYou've successfully registered on My event",
+            'mail@example.com',
+            ['johny@mail.ua']
+        )

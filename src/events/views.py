@@ -1,5 +1,7 @@
+from django.db.models import Q
 from django.contrib.auth import authenticate
 from django.shortcuts import get_object_or_404
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
@@ -9,10 +11,12 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.authtoken.models import Token
 
+from events.helpers import send_event_registration_email
 from events.models import Event
 from events.serializers import EventRegistrationSerializer
 from events.serializers import EventSerializer
 from events.serializers import UserSerializer
+
 
 class Registration(APIView):
     serializer_class = UserSerializer
@@ -62,5 +66,17 @@ class EventRegistrationView(APIView):
         serializer = EventRegistrationSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=request.user, event=event)
+            send_event_registration_email(request.user, event)
             return Response(serializer.data, status=HTTP_201_CREATED)
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+
+
+class EventSearch(ListAPIView):
+    serializer_class = EventSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        query = self.request.query_params.get('query', '')
+        return Event.objects.filter(
+            Q(title__icontains=query) | Q(description__icontains=query)
+        )
